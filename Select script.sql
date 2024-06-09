@@ -1,9 +1,8 @@
 --2 Задание
 -- Название и продолжительность самого длительного трека
-SELECT name_track, duration 
+SELECT name_track, duration AS "Продолжительность" 
 FROM music_track
-ORDER BY duration DESC 
-LIMIT 1;
+WHERE duration = (SELECT max(duration) FROM music_track);
 
 -- Название треков, продолжительность которых не менее 3,5 минут
 SELECT name_track
@@ -55,31 +54,16 @@ GROUP BY album.title
 ORDER BY avg_duration DESC;
 
 --Все исполнители, которые не выпустили альбомы в 2020 году
--- ПРОБЛЕМА!!! фильтруют только альбом 2020 года а не группу
 
-SELECT DISTINCT  name_band
-FROM bridge_band_album bba
-JOIN album ON bba.id_album = album.id_album
-JOIN band ON bba.id_band = band.id_band
- 
-
-SELECT DISTINCT name_band
-FROM album 
-JOIN band ON album.id_album = band.id_band 
-WHERE album.album_year != 2020;
-
-SELECT DISTINCT name_band
-FROM band 
-JOIN bridge_band_album bba ON band.id_band = bba.id_band
-JOIN album al ON bba.id_album = al.id_album 
-WHERE album_year != 2020;
+SELECT DISTINCT band.name_band
+FROM band
+WHERE name_band NOT IN (SELECT name_band
+	FROM album 
+	JOIN bridge_band_album bba ON bba.id_album = album.id_album
+	JOIN band b ON b.id_band = bba.id_band
+	WHERE album_year = 2020);
 
 
-SELECT DISTINCT name_band, title 
-FROM bridge_band_album bba 
-JOIN band ON bba.id_band = band.id_band
-LEFT JOIN album ON album.id_album = band.id_band 
-WHERE album_year != 2020 ;
 
 -- Название сборника в котором присутствует определенный исполнитель
 
